@@ -1,6 +1,7 @@
 package com.example.expensetracker
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -49,6 +50,7 @@ class AddActivity : AppCompatActivity() {
 
 
         binding.btnSave.setOnClickListener {
+            startActivity(Intent(this, HomeActivity::class.java))
         }
     }
 }
