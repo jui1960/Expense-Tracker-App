@@ -3,6 +3,7 @@ package com.example.expensetracker
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -12,6 +13,8 @@ import java.util.Calendar
 
 class AddActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddBinding
+    private lateinit var db: AppDatabase
+    private  var noteid  = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -23,9 +26,9 @@ class AddActivity : AppCompatActivity() {
             insets
         }
 
+
+        //date picker
         val calendar = Calendar.getInstance()
-
-
         binding.btnDatePicker.setOnClickListener {
             val year = calendar.get(Calendar.YEAR)
             val month = calendar.get(Calendar.MONTH)
@@ -49,9 +52,40 @@ class AddActivity : AppCompatActivity() {
 
 
 
-        binding.btnSave.setOnClickListener {
-            startActivity(Intent(this, HomeActivity::class.java))
+        db = AppDatabase.getDatabase(this)
+
+        noteid = intent.getIntExtra("id",-1)
+
+        if(noteid != -1){
+            binding.etTitle.setText(intent.getStringExtra("title"))
+            binding.etAmount.setText(intent.getDoubleExtra("amount",0.0).toString())
+            binding.tvSelectedDate.text = intent.getStringExtra("date")
+            binding.btnSave.text = "UPDATE TRANSACTION"
+            binding.addtitle.text = "EDIT EXPENSE"
         }
+
+
+        binding.btnSave.setOnClickListener {
+            val title = binding.etTitle.text.toString()
+            val amount = binding.etAmount.text.toString().toDouble()
+            val date = binding.tvSelectedDate.text.toString()
+
+            if(noteid==-1) {
+                val expenseData = Data(title = title, amount = amount, date = date)
+                db.expenseDao().insert(expenseData)
+            }
+            else{
+                val expensedata = Data(id = noteid,title = title,amount=amount, date = date)
+                db.expenseDao().update(expensedata)
+            }
+            Toast.makeText(
+                this@AddActivity,"data save successfully",
+                Toast.LENGTH_SHORT
+            ).show()
+            finish()
+
+        }
+
     }
 }
 

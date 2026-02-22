@@ -7,8 +7,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "expense_tracker")
 data class Data(
     @PrimaryKey(autoGenerate = true)
-    private val id : Int = 0,
-    private val title : String,
-    private val date : String,
-    private val amount : Double
+    val id: Int = 0,
+    val title: String,
+    val date: String,
+    val amount: Double
 )

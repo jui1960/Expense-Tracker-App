@@ -17,7 +17,7 @@ interface ExpenseDao {
     @Delete
     fun delete(data: Data)
 
-    @Query("SELECT * FROM expense_tracker")
+    @Query("SELECT * FROM expense_tracker ORDER BY id DESC")
     fun getAllData(): List<Data>
 
 
