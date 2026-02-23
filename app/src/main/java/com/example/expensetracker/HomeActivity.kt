@@ -3,12 +3,14 @@ package com.example.expensetracker
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.expensetracker.databinding.ActivityHomeBinding
 import com.example.expensetracker.databinding.ActivityMainBinding
+import com.example.expensetracker.databinding.DialogBinding
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
@@ -52,6 +54,7 @@ class HomeActivity : AppCompatActivity() {
 
     private fun loadData() {
         val list = db.expenseDao().getAllData()
+                    binding.cnt.text = "EXpense count : ${list.size}"
         val adapter = ExpenseAdapter(
             list,
             onEdit = { data ->
@@ -64,9 +67,24 @@ class HomeActivity : AppCompatActivity() {
                 startActivity(intent)
             },
             onDelete = { data ->
-                db.expenseDao().delete(data)
-                loadData()
-                totalAmount()
+               val dialogBinding = DialogBinding.inflate(layoutInflater)
+                val dialog = AlertDialog.Builder(this)
+                    .setView(dialogBinding.root)
+                    .create()
+
+                dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+                dialogBinding.btnConfirm.setOnClickListener {
+                    db.expenseDao().delete(data)
+                    loadData()
+                    totalAmount()
+                    dialog.dismiss()
+                }
+                dialogBinding.btnCancel.setOnClickListener {
+                    dialog.dismiss()
+                }
+                dialog.show()
+
             }
         )
         binding.rvTransactions.adapter = adapter
